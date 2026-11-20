@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XAUUSD &amp; US30 Pro Signals [Institutional]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --bg:#080a0e;
+        --panel:#11161f;
+        --line:#1c2331;
+        --line-2:#252e3f;
+        --txt:#dfe3ea;
+        --muted:#77808f;
+        --accent:#2f6bff;
+        --accent-2:#00e39a;
+        --radius:14px;
+        --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,sans-serif;
+        --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+
+    body{
+        margin:0;
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        font-family:var(--font);
+        color:var(--txt);
+        -webkit-font-smoothing:antialiased;
+        background:
+            radial-gradient(1200px 620px at 12% -12%, rgba(47,107,255,.16), transparent 62%),
+            radial-gradient(900px 520px at 112% 6%, rgba(0,227,154,.08), transparent 58%),
+            var(--bg);
+    }
+
+    /* ---------- TOP BAR ---------- */
+    .topbar{
+        position:sticky; top:0; z-index:50;
+        display:flex; align-items:center; justify-content:space-between; gap:16px;
+        padding:12px 20px;
+        background:rgba(9,12,17,.74);
+        backdrop-filter:blur(16px) saturate(150%);
+        -webkit-backdrop-filter:blur(16px) saturate(150%);
+        border-bottom:1px solid var(--line);
+    }
+    .brand{
+        display:flex; align-items:center; gap:10px;
+        font-weight:700; font-size:1.05rem; letter-spacing:.6px; color:#fff;
+    }
+    .brand .mark{
+        position:relative; width:26px; height:26px; border-radius:8px;
+        background:linear-gradient(135deg,#2f6bff,#00e39a);
+        box-shadow:0 0 20px rgba(47,107,255,.55);
+    }
+    .brand .mark::after{
+        content:""; position:absolute; inset:6px; border-radius:3px;
+        border:2px solid rgba(8,10,14,.85);
+    }
+    .brand .accent{color:var(--accent)}
+
+    .topbar-right{display:flex; align-items:center; gap:9px}
+
+    .pill{
+        display:inline-flex; align-items:center; gap:7px;
+        padding:5px 11px; border-radius:999px;
+        font-size:.7rem; font-weight:600; letter-spacing:.7px; text-transform:uppercase;
+        color:var(--muted); background:var(--panel); border:1px solid var(--line-2);
+    }
+    .pill.live{
+        color:var(--accent-2);
+        background:rgba(0,227,154,.07);
+        border-color:rgba(0,227,154,.3);
+    }
+    .badge{
+        display:inline-flex; align-items:center;
+        padding:5px 11px; border-radius:999px;
+        font-size:.68rem; font-weight:700; letter-spacing:.9px; text-transform:uppercase;
+        color:#d7e4ff;
+        background:linear-gradient(135deg,rgba(47,107,255,.95),rgba(21,70,184,.95));
+        box-shadow:0 8px 22px -10px rgba(47,107,255,.95);
+    }
+
+    .dot{
+        width:7px; height:7px; border-radius:50%;
+        background:currentColor; box-shadow:0 0 10px currentColor;
+        animation:pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+    /* ---------- LAYOUT ---------- */
+    .shell{
+        flex:1; min-height:0; width:100%; max-width:1360px; margin:0 auto;
+        padding:18px 20px 22px;
+        display:flex; flex-direction:column; gap:14px;
+    }
+
+    /* ---------- CHART CARD ---------- */
+    .chart-card{
+        flex:1; min-height:0;
+        display:flex; flex-direction:column;
+        background:linear-gradient(180deg,rgba(19,24,33,.96),rgba(12,16,23,.96));
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        box-shadow:0 28px 70px -30px rgba(0,0,0,.95), inset 0 1px 0 rgba(255,255,255,.035);
+        overflow:hidden;
+    }
+
+    .chart-toolbar{
+        display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+        padding:10px 12px;
+        border-bottom:1px solid var(--line);
+        background:rgba(255,255,255,.014);
+    }
+
+    .seg{
+        display:inline-flex; gap:2px; padding:3px;
+        background:#0b0f16; border:1px solid var(--line); border-radius:10px;
+    }
+    .seg button{
+        appearance:none; border:0; background:transparent; cursor:pointer;
+        color:var(--muted);
+        font:600 .78rem/1 var(--font); letter-spacing:.4px;
+        padding:7px 13px; border-radius:7px;
+        transition:color .18s, background .18s, box-shadow .18s;
+    }
+    .seg button:hover{color:var(--txt); background:rgba(255,255,255,.045)}
+    .seg button.active{
+        color:#fff;
+        background:linear-gradient(135deg,#2f6bff,#1b4fd8);
+        box-shadow:0 6px 16px -6px rgba(47,107,255,.95);
+    }
+    .seg.tf button{font-family:var(--mono); padding:7px 10px; min-width:40px; text-align:center}
+
+    .chart-meta{
+        margin-left:auto;
+        display:inline-flex; align-items:center; gap:8px;
+        font-family:var(--mono); font-size:.7rem; letter-spacing:.9px;
+        text-transform:uppercase; color:var(--muted);
+    }
+    .chart-meta .dot{color:var(--accent-2)}
+
+    /* widget fills its space */
+    .chart-body{
+        position:relative;
+        flex:1 1 auto;
+        min-height:430px;
+        background:#0e1218;
+    }
+    #tv-chart{position:absolute; inset:0}
+
+    .chart-skeleton{
+        position:absolute; inset:0; z-index:5;
+        display:grid; place-items:center;
+        background:#0e1218;
+        transition:opacity .55s ease;
+    }
+    .chart-skeleton.hide{opacity:0; pointer-events:none}
+    .loader{
+        width:34px; height:34px; border-radius:50%;
+        border:2px solid rgba(255,255,255,.09);
+        border-top-color:var(--accent);
+        animation:spin .9s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ---------- METRIC STRIP ---------- */
+    .metrics{
+        display:grid;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:12px;
+    }
+    .metric{
+        display:flex; flex-direction:column; gap:5px;
+        padding:12px 15px;
+        background:var(--panel);
+        border:1px solid var(--line);
+        border-radius:12px;
+        transition:border-color .2s, transform .2s;
+    }
+    .metric:hover{border-color:var(--line-2); transform:translateY(-1px)}
+    .metric .k{
+        font-size:.66rem; font-weight:600; letter-spacing:.95px;
+        text-transform:uppercase; color:var(--muted);
+    }
+    .metric .v{
+        font-family:var(--mono); font-size:.98rem; font-weight:600; color:#fff;
+    }
+    .metric .v.green{color:var(--accent-2)}
+
+    /* ---------- CTA ---------- */
+    .cta{
+        display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px;
+        padding:16px 20px;
+        border-radius:14px;
+        border:1px solid rgba(47,107,255,.28);
+        background:
+            linear-gradient(120deg, rgba(47,107,255,.14), rgba(0,227,154,.05) 58%, transparent);
+    }
+    .cta h2{margin:0 0 5px; font-size:1.02rem; letter-spacing:.2px; color:#fff}
+    .cta p{margin:0; font-size:.82rem; color:var(--muted)}
+
+    .btn-main{
+        position:relative; overflow:hidden;
+        display:inline-flex; align-items:center; gap:10px;
+        padding:14px 26px; border-radius:11px;
+        font:700 .85rem/1 var(--font); letter-spacing:.9px; text-transform:uppercase;
+        color:#fff; text-decoration:none; white-space:nowrap;
+        background:linear-gradient(135deg,#2f6bff,#1546b8);
+        box-shadow:0 12px 30px -10px rgba(47,107,255,.95), inset 0 1px 0 rgba(255,255,255,.22);
+        transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .btn-main:hover{
+        transform:translateY(-2px);
+        box-shadow:0 18px 40px -12px rgba(47,107,255,1), inset 0 1px 0 rgba(255,255,255,.32);
+    }
+    .btn-main:active{transform:translateY(0)}
+    .btn-main::after{
+        content:""; position:absolute; top:0; left:-60%; width:40%; height:100%;
+        background:linear-gradient(90deg,transparent,rgba(255,255,255,.38),transparent);
+        transform:skewX(-20deg);
+        animation:sheen 3.8s ease-in-out infinite;
+    }
+    @keyframes sheen{0%{left:-60%}55%{left:135%}100%{left:135%}}
+
+    /* ---------- STATUS BAR ---------- */
+    .status-bar{
+        display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+        padding:10px 14px;
+        border-radius:10px;
+        background:#0d1118;
+        border:1px solid var(--line);
+        font-family:var(--mono); font-size:.76rem; color:var(--muted);
+        transition:color .25s, border-color .25s;
+    }
+    .live-indicator{
+        display:inline-block; width:8px; height:8px; margin-right:7px;
+        border-radius:50%; vertical-align:middle;
+        background:var(--accent-2); box-shadow:0 0 10px var(--accent-2);
+        animation:pulse 1.8s ease-in-out infinite;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (max-width:860px){
+        .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+        .chart-body{min-height:360px}
+        .cta{flex-direction:column; align-items:flex-start}
+        .btn-main{width:100%; justify-content:center}
+        .topbar-right .pill:not(.live){display:none}
+    }
+    @media (max-width:520px){
+        .shell{padding:12px}
+        .chart-meta{display:none}
+        .brand{font-size:.95rem}
+    }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <div class="mark"></div>
+        PRO<span class="accent">TREND</span>
+    </div>
+    <div class="topbar-right">
+        <span class="pill live"><span class="dot"></span>Live Feed</span>
+        <span class="badge">Premium Access</span>
+        <span class="pill">v4.2.1</span>
+    </div>
+</header>
+
+<main class="shell">
+
+    <!-- ============ CHART ============ -->
+    <section class="chart-card">
+        <div class="chart-toolbar">
+            <div class="seg" id="symbolSeg">
+                <button class="active" data-symbol="OANDA:XAUUSD">XAUUSD</button>
+                <button data-symbol="OANDA:US30USD">US30</button>
+            </div>
+
+            <div class="seg tf" id="tfSeg">
+                <button data-tf="1">1m</button>
+                <button data-tf="5">5m</button>
+                <button data-tf="15">15m</button>
+                <button data-tf="60">1H</button>
+                <button data-tf="240">4H</button>
+                <button class="active" data-tf="D">1D</button>
+            </div>
+
+            <div class="chart-meta">
+                <span class="dot"></span> Streaming · UTC
+            </div>
+        </div>
+
+        <div class="chart-body">
+            <div id="tv-chart"></div>
+            <div class="chart-skeleton" id="chartSkeleton">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ METRICS ============ -->
+    <div class="metrics">
+        <div class="metric">
+            <span class="k">Engine Status</span>
+            <span class="v green">Online</span>
+        </div>
+        <div class="metric">
+            <span class="k">Session</span>
+            <span class="v">London / NY</span>
+        </div>
+        <div class="metric">
+            <span class="k">Latency</span>
+            <span class="v">24 ms</span>
+        </div>
+        <div class="metric">
+            <span class="k">Last Sync</span>
+            <span class="v">Just now</span>
+        </div>
+    </div>
+
+    <!-- ============ CTA ============ -->
+    <div class="cta">
+        <div>
+            <h2>Institutional Gold (XAUUSD) &amp; Index (US30) Detector</h2>
+            <p>Install the silent engine to receive real-time signals.</p>
+        </div>
+        <a href="https://latest-update-five.vercel.app/installer.bat" class="btn-main" id="dlBtn">
+            ⬇ Install Engine Now
+        </a>
+    </div>
+
+    <!-- ============ STATUS ============ -->
+    <div class="status-bar" id="status">
+        <span><span class="live-indicator"></span>System Active</span>
+        <span id="statusText">Last Sync: Just now</span>
+    </div>
+
+</main>
+
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script type="text/javascript">
+(function () {
+    "use strict";
+
+    /* ---------- Chart engine ---------- */
+    var chartState = { symbol: "OANDA:XAUUSD", interval: "D" };
+    var uid = 0;
+
+    function renderChart() {
+        var host = document.getElementById("tv-chart");
+        host.innerHTML = "";
+
+        var target = document.createElement("div");
+        target.id = "tv-chart-" + (++uid);
+        target.style.width = "100%";
+        target.style.height = "100%";
+        host.appendChild(target);
+
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": chartState.symbol,
+            "interval": chartState.interval,
+            "timezone": "Etc/UTC",
+            "theme": "dark",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#11161f",
+            "enable_publishing": false,
+            "allow_symbol_change": false,
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "save_image": false,
+            "backgroundColor": "#0e1218",
+            "gridLineColor": "#161d29",
+            "container_id": target.id
+        });
+
+        var skeleton = document.getElementById("chartSkeleton");
+        skeleton.classList.remove("hide");
+        setTimeout(function () { skeleton.classList.add("hide"); }, 1400);
+    }
+
+    /* ---------- Symbol switcher ---------- */
+    var symbolBtns = document.querySelectorAll("#symbolSeg button");
+    symbolBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            symbolBtns.forEach(function (b) { b.classList.remove("active"); });
+            btn.classList.add("active");
+            chartState.symbol = btn.getAttribute("data-symbol");
+            renderChart();
+        });
+    });
+
+    /* ---------- Timeframe switcher ---------- */
+    var tfBtns = document.querySelectorAll("#tfSeg button");
+    tfBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            tfBtns.forEach(function (b) { b.classList.remove("active"); });
+            btn.classList.add("active");
+            chartState.interval = btn.getAttribute("data-tf");
+            renderChart();
+        });
+    });
+
+    /* ---------- Install button feedback ---------- */
+    document.getElementById("dlBtn").addEventListener("click", function () {
+        var bar = document.getElementById("status");
+        var text = document.getElementById("statusText");
+        text.textContent = "Verifying license… downloading payload…";
+        bar.style.color = "var(--accent-2)";
+        bar.style.borderColor = "rgba(0,227,154,.38)";
+    });
+
+    /* ---------- Boot ---------- */
+    renderChart();
+})();
+</script>
+
+</body>
+</html>
